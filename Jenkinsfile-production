@@ -23,7 +23,7 @@ pipeline {
                     sh 'if [ -d "deploy" ]; then rm -Rf deploy; fi'
                     sh 'mkdir deploy'
                     s3Download file:"${params.fileName}.tar.gzip", bucket:'task1-artifacts', path:"production/${params.fileName}.tar.gzip"
-                    sh 'tar -xzvf ${params.fileName}.tar.gzip -C ./deploy'
+                    sh 'tar -xzf ${params.fileName}.tar.gzip -C ./deploy'
                     s3Upload bucket:'task1-production', includePathPattern:'**/*', workingDir:'deploy'
                 }
             }
