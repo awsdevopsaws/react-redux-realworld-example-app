@@ -1,0 +1,33 @@
+pipeline {
+  agent {
+    docker {
+      image 'alpine'
+    }
+  }
+  parameters {
+    string (
+      defaultValue: '', 
+      name: 'fileName', 
+      trim: true
+    )
+  }
+    stages {
+        stage('Deploy_Production'){
+            when {
+                expression {
+                return params.fileName != ''
+                }
+            }
+            steps {
+                withAWS(region:'eu-central-1', credentials:'tarik-cred'){
+                    sh 'if [ -d "deploy" ]; then rm -Rf deploy; fi'
+                    sh 'mkdir deploy'
+                    s3Download file:"${params.fileName}.tar.gzip", bucket:'http://task1-artifacts.s3-website.eu-central-1.amazonaws.com', path:"production/${params.fileName}.tar.gzip"
+                    sh 'tar -xvf ${params.fileName}.tar.gzip -C ./deploy'
+                    s3Upload bucket:'http://task1-production.s3-website.eu-central-1.amazonaws.com', includePathPattern:'**/*', workingDir:'deploy'
+                }
+            }
+        }
+    }
+
+}
