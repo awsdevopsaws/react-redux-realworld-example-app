@@ -14,15 +14,15 @@ pipeline {
         stage('Publish_artifacts'){
             steps{
                 withAWS(region:'eu-central-1', credentials:'tarik-cred') {
-                    s3Upload file:"staging/${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip", bucket:'http://task1-artifacts.s3-website.eu-central-1.amazonaws.com', path:'staging/'
-                    s3Upload file:"production/${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip", bucket:'http://task1-artifacts.s3-website.eu-central-1.amazonaws.com', path:'production/'
+                    s3Upload file:"staging/${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip", bucket:'task1-artifacts', path:'staging/'
+                    s3Upload file:"production/${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip", bucket:'task1-artifacts', path:'production/'
                 }
             }
         }
         stage('Deploy_Staging'){
             steps{
                 withAWS(region:'eu-central-1', credentials:'tarik-cred'){
-                    s3Upload bucket:'http://task1-staging.s3-website.eu-central-1.amazonaws.com', includePathPattern:'**/*', workingDir:'staging/build'
+                    s3Upload bucket:'task1-staging', includePathPattern:'**/*', workingDir:'staging/build'
                 }
             }
         }
